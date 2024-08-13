@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tumor Detection</title>
+    <style>
+        /* Center the container */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0; /* Optional background color */
+        }
+        .container {
+            text-align: center;
+            background-color: white; /* Optional background for the container */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        #intro-text {
+            color: green;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        #result {
+            margin-top: 40px; /* Increased margin to move it further below */
+            font-size: 18px;
+            font-weight: bold;
+            visibility: hidden;
+        }
+        #final-result {
+            font-size: 18px;
+            font-weight: bold;
+            visibility: hidden;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="intro-text">
+            Hello, I am Dr. Tom, your AI tumor detector assistant. Kindly upload your image below and I will tell you if I found any tumor in your MRI scan.
+        </div>
+        <h1>Tumor Detection System</h1>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button id="uploadButton">Upload and Predict</button>
+        <div id="result">Result from your MRI scan is:</div>
+        <div id="final-result"></div>
+    </div>
+
+    <script>
+        var websocketString = '';
+        if (window.location.hostname === '127.0.0.1') {
+            websocketString = "ws://localhost:8000/ws";
+        } else {
+            websocketString = `wss://${window.location.hostname}/ws`;
+        }
+
+        var ws = new WebSocket(websocketString);
+
+        ws.onopen = function() {
+            console.log("WebSocket connection established.");
+        };
+
+        ws.onmessage = function(event) {
+            var resultDiv = document.getElementById('result');
+            var finalResultDiv = document.getElementById('final-result');
+
+            // Show "Result from your MRI scan is:" text
+            resultDiv.style.visibility = 'visible';
+
+            // After a short delay, show the actual result
+            setTimeout(function() {
+                finalResultDiv.textContent = event.data;
+                finalResultDiv.style.visibility = 'visible';
+            }, 1000); // 1000ms delay
+        };
+
+        ws.onclose = function() {
+            console.log("WebSocket connection closed.");
+        };
+
+        ws.onerror = function(error) {
+            console.error("WebSocket error: ", error);
+        };
+
+        document.getElementById('uploadButton').onclick = function() {
+            var fileInput = document.getElementById('imageUpload');
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+                var imageData = event.target.result.split(',')[1]; // Extract base64 data
+                ws.send(imageData);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
