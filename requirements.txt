@@ -1,5 +1,0 @@
-﻿fastapi
-uvicorn
-pillow
-numpy
-tensorflow
