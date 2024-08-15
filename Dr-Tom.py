@@ -13,9 +13,9 @@ from tensorflow.keras.models import load_model
 app = FastAPI()
 
 # Static files serving
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="/app/static"), name="static")
 
-model = tf.keras.models.load_model('best_model')
+model = tf.keras.models.load_model('/app/best_model')
 
 # Preprocessing function to transform the image for your model
 def preprocess_image(image: Image.Image):
@@ -49,7 +49,7 @@ async def predict(image: Image.Image):
 
 @app.get("/", response_class=HTMLResponse)
 async def get():
-    html_content = open('static/index.html').read()
+    html_content = open('/app/static/index.html').read()
     return HTMLResponse(content=html_content, status_code=200)
 
 @app.websocket("/ws")
