@@ -8,14 +8,21 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-
+from tensorflow.keras.models import model_from_json
 
 app = FastAPI()
 
 # Static files serving
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-model = tf.keras.models.load_model('best_model/model.weights.h5')
+# Load JSON architecture
+with open('best_model/config.json', 'r') as json_file:
+    model_json = json_file.read()
+model = model_from_json(model_json)
+
+# Load weights
+model.load_weights('best_model/model.weights.h5')
+
 
 # Preprocessing function to transform the image for your model
 def preprocess_image(image: Image.Image):
