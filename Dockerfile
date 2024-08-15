@@ -1,13 +1,12 @@
 FROM python:3.9-slim
 
-WORKDIR /
+WORKDIR /app
 
 
-COPY best_model /
-COPY Dr-Tom.py /
-COPY requirements.txt /
-COPY static /
-COPY buildspec.yml /
+COPY best_model /app/best_model
+COPY Dr-Tom.py /app/Dr-Tom.py
+COPY requirements.txt /app/requirements.txt
+COPY static /app/static
 
 RUN pip install -r requirements.txt
 
