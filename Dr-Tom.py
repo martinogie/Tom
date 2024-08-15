@@ -15,7 +15,7 @@ app = FastAPI()
 # Static files serving
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-model = tf.keras.models.load_model('best_model')
+model = tf.keras.models.load_model('best_model/model.weights.h5')
 
 # Preprocessing function to transform the image for your model
 def preprocess_image(image: Image.Image):
